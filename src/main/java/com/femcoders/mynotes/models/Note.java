@@ -2,7 +2,6 @@ package com.femcoders.mynotes.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -20,5 +19,8 @@ public class Note {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_id", nullable = false)
+    private Type type;
     private LocalDateTime createdAt = LocalDateTime.now();
 }
