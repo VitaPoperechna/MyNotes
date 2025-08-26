@@ -2,6 +2,8 @@ package com.femcoders.mynotes.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Set;
+
 @Entity
 @Data
 @Table(name="users")
@@ -14,4 +16,6 @@ public class User {
     private String email;
     private String password;
     private String role;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Note> notes;
 }
