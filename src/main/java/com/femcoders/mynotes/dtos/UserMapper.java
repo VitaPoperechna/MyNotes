@@ -1,8 +1,9 @@
 package com.femcoders.mynotes.dtos;
 
 import com.femcoders.mynotes.models.User;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class UserMapper {
     public UserResponse toDto(User user) {
         if (user == null) {
