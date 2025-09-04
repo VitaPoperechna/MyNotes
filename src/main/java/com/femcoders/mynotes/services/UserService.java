@@ -3,60 +3,47 @@ package com.femcoders.mynotes.services;
 import com.femcoders.mynotes.dtos.UserMapper;
 import com.femcoders.mynotes.dtos.UserRequest;
 import com.femcoders.mynotes.dtos.UserResponse;
-import com.femcoders.mynotes.models.Role;
 import com.femcoders.mynotes.models.User;
 import com.femcoders.mynotes.repositories.UserRepository;
-import lombok.RequiredArgsConstructor;
+import com.femcoders.mynotes.security.UserDetail;
+import org.hibernate.ObjectNotFoundException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
-
-    public UserResponse registerUser(UserRequest request) {
-        User user = userMapper.toEntity(request);
-        user.setPassword(passwordEncoder.encode(request.password()));
-        user.setRole(Role.USER);
-        User savedUser = userRepository.save(user);
-        return userMapper.toDto(savedUser);
+    private final BCryptPasswordEncoder passwordEncoder;
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+    public List<UserResponse> getUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(UserMapper::toDto).toList();
     }
 
-    public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream()
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(User.class.getSimpleName(), id));
+        return UserMapper.toDto(user);
     }
 
-    public UserResponse getUserByUsername(String username) {
-        User user = (User) userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-        return userMapper.toDto(user);
+    public UserResponse addUser(UserRequest userRequest){
+        User newUser = UserMapper.toEntity(userRequest);
+        newUser.setPassword(passwordEncoder.encode(userRequest.password()));
+        User savedUser = userRepository.save(newUser);
+        return UserMapper.toDto(savedUser);
     }
 
-    public UserResponse updateUser(Long id, UserRequest request) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-
-        userMapper.updateEntityFromDto(request, user);
-        if (request.password() != null && !request.password().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(request.password()));
-        }
-        User updatedUser = userRepository.save(user);
-        return userMapper.toDto(updatedUser);
-    }
-
-    public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found with id: " + id);
-        }
-        userRepository.deleteById(id);
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username)
+                .map(user -> new UserDetail(user))
+                .orElseThrow(() -> new UsernameNotFoundException(username));
     }
 }
