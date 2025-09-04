@@ -30,7 +30,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@RequestBody @Valid UserRequest userRequest) {
-        UserRequest userRequestWithRolByDefault = new UserRequest(userRequest.username(), userRequest.password(), "ROLE_USER");
+        UserRequest userRequestWithRolByDefault = new UserRequest(userRequest.username(), userRequest.email(), userRequest.password());
 
         UserResponse userResponse = userService.addUser(userRequestWithRolByDefault);
         return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
