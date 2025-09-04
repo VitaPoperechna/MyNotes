@@ -13,26 +13,26 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    public final UserService UserService;
+    public final UserService userService;
 
-    public UserController(UserService UserService) {
-        this.UserService = UserService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
-        return new ResponseEntity<>(UserService.getAllUsers(), HttpStatus.OK);
+    public ResponseEntity<List<UserResponse>> getUsers() {
+        return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<UserResponse> getUserByUsername(@PathVariable String name) {
-        return new ResponseEntity<>(UserService.getUserByUsername(name), HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserByUserId(@PathVariable Long id) {
+        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
 
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> registerUser (@Valid @RequestBody UserRequest userRequest) {
-        UserResponse newUser = UserService.registerUser(userRequest);
+    public ResponseEntity<UserResponse> addUser (@Valid @RequestBody UserRequest userRequest) {
+        UserResponse newUser = userService.addUser(userRequest);
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 }

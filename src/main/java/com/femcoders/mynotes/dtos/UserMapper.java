@@ -1,10 +1,10 @@
 package com.femcoders.mynotes.dtos;
 
 import com.femcoders.mynotes.models.User;
-
+import org.springframework.stereotype.Component;
 
 public class UserMapper {
-    public UserResponse toDto(User user) {
+    public static UserResponse toDto(User user) {
         if (user == null) {
             return null;
         }
@@ -14,7 +14,7 @@ public class UserMapper {
                 user.getEmail());
     }
 
-    public User toEntity(UserRequest request) {
+    public static User toEntity(UserRequest request) {
         if (request == null) {
             return null;
         }
