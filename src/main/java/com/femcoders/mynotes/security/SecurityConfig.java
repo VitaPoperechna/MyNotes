@@ -1,6 +1,7 @@
 package com.femcoders.mynotes.security;
 
 import jakarta.servlet.Filter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,13 +15,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.femcoders.mynotes.security.jwt.JwtAuthFilter;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
-        this.jwtAuthFilter = jwtAuthFilter;
-    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -35,7 +34,7 @@ public class SecurityConfig {
                 )
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(manager-> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore((Filter) jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
