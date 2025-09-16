@@ -1,33 +1,21 @@
-# Docker Compose configuration for MyNotes testing with Maven image
-# This configuration runs tests using the official Maven Docker image
-# without building a custom container image
+# Docker Compose configuration for MyNotes testing with custom Dockerfile
+# This configuration builds and runs tests using a custom test-specific Dockerfile
+# which allows for more control over the test environment and dependencies
 
 services:
-  # Test service using official Maven image
+  # Test service using custom Dockerfile
   mynotes-test:
-    # Use official Maven image with Eclipse Temurin JDK 21
-    image: maven:3.9.11-eclipse-temurin-21
-
-    # Set working directory inside container
-    working_dir: /src
-
-    # Mount source code as read-only volume for testing
-    volumes:
-      - type: bind
-        source: . # Current directory (project root)
-        target: /src # Mount point inside container
-        read_only: true # Prevent modifications to source code
-
-    # Run Maven test command with test profile
-    # Using -Ptest profile to avoid building JAR files (allows read-only source mounting)
-    entrypoint: ["mvn", "-Ptest", "clean", "verify", "--no-transfer-progress"]
+    # Build configuration for custom test image
+    build:
+      context: . # Build context is current directory
+      dockerfile: Dockerfile-test # Use custom test Dockerfile
 
     # Custom container name for easier identification
     container_name: mynotes-test
 
     # Environment variables passed to the SpringBoot application
     environment:
-      - SHOW_SQL=false
+      - SPRING_PROFILES_ACTIVE=docker # Activates Docker-specific configuration profile
       - SERVER_PORT=8080 # Sets the server port inside container
       - DB_URL=jdbc:mysql://mynotes-test-db:3306/mynotes # Database connection URL using service name
       - DB_USERNAME=mynotes # Database username
@@ -59,7 +47,7 @@ services:
     image: mysql:8.0
 
     # Custom container name for easier identification
-    container_name: mynotes-test-db
+    container_name: mynotes-test1-db
 
     # MySQL environment variables for database initialization
     environment:
