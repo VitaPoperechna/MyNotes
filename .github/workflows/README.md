@@ -1,6 +1,6 @@
 # GitHub Actions Workflows
 
-This directory contains the CI/CD workflows for the FF5 DreamRoute project. These workflows automate testing, building, and releasing the application using Docker containers.
+This directory contains the CI/CD workflows for the MyNotes project. These workflows automate testing, building, and releasing the application using Docker containers.
 
 ## Overview
 
@@ -47,10 +47,10 @@ These secrets must be configured in the GitHub repository settings:
 
 The workflows create different image tags based on the trigger:
 
-| Workflow | Tags Created | Example |
-|----------|-------------|---------|
-| **Build** | `main`, `sha-<commit>` | `ff5-dreamroute:main`, `ff5-dreamroute:sha-abc123` |
-| **Release** | `<version>`, `latest` | `ff5-dreamroute:v1.0.0`, `ff5-dreamroute:latest` |
+| Workflow | Tags Created | Example                              |
+|----------|-------------|--------------------------------------|
+| **Build** | `main`, `sha-<commit>` | `mynotes:main`, `mynotes:sha-abc123` |
+| **Release** | `<version>`, `latest` | `mynotes:v1.0.0`, `mynotes:latest`   |
 
 ## Usage Examples
 
@@ -74,13 +74,13 @@ docker compose -f docker-compose-test.yml up --abort-on-container-exit
 ### Pulling Images
 ```bash
 # Latest development build
-docker pull <username>/ff5-dreamroute:main
+docker pull <username>/mynotes:main
 
 # Specific release
-docker pull <username>/ff5-dreamroute:v1.0.0
+docker pull <username>/mynotes:v1.0.0
 
 # Latest stable release
-docker pull <username>/ff5-dreamroute:latest
+docker pull <username>/mynotes:latest
 ```
 
 ## Workflow Features
